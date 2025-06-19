@@ -1,0 +1,98 @@
+#!/usr/bin/env python3
+# 2025 Stuart Johnson
+#
+# Sensor test for simulation and real robots as a ros2 node. This node places the
+# robot at one (or more) poses and records sensor values.
+#
+from typing import Tuple, Iterator
+import time
+import sys
+import rclpy
+import scipy.io
+from geometry_msgs.msg import Twist, TransformStamped
+from sensor_msgs.msg import Image
+from rclpy.service import Service
+from tf2_msgs.msg import TFMessage
+from rclpy.node import Node
+from rclpy.parameter import Parameter
+from scipy.spatial.transform.rotation import Rotation as rot
+import os
+import yaml
+import numpy as np
+import copy
+import cv2
+from cv_bridge import CvBridge
+from ament_index_python.packages import get_package_share_directory
+
+class SensorsNode(Node):
+    def __init__(self):
+        super().__init__('sensors_node')
+        self.depth_image_valid = False
+        self.rgb_image_valid = False
+        self.done = False
+        self.done_depth = False
+        self.done_rgb = False
+        self.declare_parameter('sim_type', 'gazebo') # Declare the parameter with a default value
+        self.sim_type = self.get_parameter('sim_type').get_parameter_value().string_value
+        print("sim type is: ", self.sim_type)
+        default_report_dir = os.path.join(os.getenv("HOME"),'sim_check')
+        self.declare_parameter('report_dir', default_report_dir) # Declare the parameter with a default value
+        self.report_dir = self.get_parameter('report_dir').get_parameter_value().string_value
+        print("report_dir is: ", self.report_dir)
+        if self.sim_type == 'isaacsim':
+            self.adj_omega = 180.0 / np.pi
+            self.source_xform_frame = 'odom'
+            self.depth_topic = '/depth_camera/depth'
+            self.rgb_topic = '/rgb_camera/rgb'
+        elif self.sim_type == 'gazebo':
+            self.adj_omega = 1.0
+            self.source_xform_frame = 'differential_drive_robot_4wheel/odom'
+            self.depth_topic = '/d435_depth_camera/image_raw'
+            self.rgb_topic = '/d435_rgb_camera/image_raw'
+        else:
+            print("unknown simulator type")
+            self.done=True
+            return
+        self.listener_depth = self.create_subscription(Image,self.depth_topic, self.process_depth, 10)
+        self.listener_rgb = self.create_subscription(Image, self.rgb_topic, self.process_rgb, 10)
+        self.bridge = CvBridge()
+
+    def process_depth(self, image_msg: Image):
+        self.depth_image = copy.deepcopy(image_msg)
+        self.done_depth = True
+        self.rgb_image_valid = True
+        self.done = self.done_depth and self.done_rgb
+
+    def process_rgb(self, image_msg: Image):
+        self.rgb_image = copy.deepcopy(image_msg)
+        self.done_rgb = True
+        self.depth_image_valid = True
+        self.done = self.done_depth and self.done_rgb
+
+    def serialize(self):
+        # write the time series to a matlab .mat file - for matlab analysis
+        if self.rgb_image_valid:
+            cv_rgb = self.bridge.imgmsg_to_cv2(self.rgb_image, desired_encoding='bgr8')
+            #cv2.imwrite('/home/sjohnson/depth_image.jpg', self.depth_image)
+            cv2.imwrite(os.path.join(self.report_dir, 'rgb_image.jpg'), cv_rgb)
+        if self.depth_image_valid:
+            depth_image = self.bridge.imgmsg_to_cv2(self.depth_image, desired_encoding='passthrough')
+            depth_array = np.clip(np.array(depth_image,dtype=np.float32),0,20)
+            cv_depth = (depth_array / 20.0 * 255).astype(np.uint8)
+            cv2.imwrite(os.path.join(self.report_dir, 'depth_image.jpg'), cv_depth)
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = SensorsNode()
+    try:
+        while rclpy.ok() and not node.done:
+            rclpy.spin_once(node)
+    except KeyboardInterrupt:
+        pass
+    node.serialize()
+    node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
+
