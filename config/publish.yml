@@ -1,5 +1,5 @@
 output_home_dir_gazebo: "/home/sjohnson/sim_check_gazebo"
 output_home_dir_isaac: "/home/sjohnson/sim_check_isaac"
-time_dir_gazebo: "sc20250624_095329"
-time_dir_isaac: "sc20250624_100540"
+time_dir_gazebo: "sc20250624_114654"
+time_dir_isaac: "sc20250624_114938"
 package_update_dir: "/home/sjohnson/ros2_ws/src/differential_drive_test"

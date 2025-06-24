@@ -1,8 +1,8 @@
-{"topic":"\/imu","count":399,"wall Hz":13.5001091083,"sim Hz":20.0502512563}
-{"topic":"\/d435_rgb_camera\/image_raw","count":605,"wall Hz":20.4474013924,"sim Hz":30.353200883}
-{"topic":"\/d435_depth_camera\/image_raw","count":606,"wall Hz":20.4526718285,"sim Hz":30.3515977161}
-{"topic":"\/scan","count":200,"wall Hz":6.7661540241,"sim Hz":10.0502512563}
-{"topic":"\/odom","count":1995,"wall Hz":67.4011928725,"sim Hz":100.0501504514}
-{"topic":"\/clock","count":19944,"wall Hz":672.9541455537,"sim Hz":1000.0501429073}
-{"topic":"\/tf","count":2393,"wall Hz":80.7530038326,"sim Hz":120.0521747855}
-{"topic":"\/gt_pose","count":1460,"wall Hz":49.292839756,"sim Hz":73.2674261053}
+{"topic":"\/imu","count":400,"wall Hz":13.3381270577,"sim Hz":20.0501253133}
+{"topic":"\/d435_rgb_camera\/image_raw","count":604,"wall Hz":20.1186247139,"sim Hz":30.3532840846}
+{"topic":"\/d435_depth_camera\/image_raw","count":604,"wall Hz":20.113049749,"sim Hz":30.3532840846}
+{"topic":"\/scan","count":200,"wall Hz":6.6628726205,"sim Hz":10.0502512563}
+{"topic":"\/odom","count":1999,"wall Hz":66.6324013311,"sim Hz":100.0500500501}
+{"topic":"\/clock","count":19930,"wall Hz":662.6987107257,"sim Hz":999.849495811}
+{"topic":"\/tf","count":2401,"wall Hz":79.7830172009,"sim Hz":119.7506234414}
+{"topic":"\/gt_pose","count":1488,"wall Hz":49.4208793821,"sim Hz":74.1922616673}

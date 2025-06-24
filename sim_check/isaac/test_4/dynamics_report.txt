@@ -1,5 +1,5 @@
-data, ground truth turn radii (meters):  0.04897196478246682 0.04897196478246682
-data, ground truth angle change (radians):  0.9411084437660558 0.9411084437660558
+data, ground truth turn radii (meters):  0.08403624563889406 0.08403624563889406
+data, ground truth angle change (radians):  0.9604531831100471 0.9604531831100471
 wheel separation calibration factor:  1.0
-data, ground truth sim time change(seconds):  10.050000524000001 10.050000524000001
-wall time change(seconds):  24.900641441345215
+data, ground truth sim time change(seconds):  10.033333857000002 10.033333857000002
+wall time change(seconds):  24.763196229934692

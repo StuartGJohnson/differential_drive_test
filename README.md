@@ -94,8 +94,8 @@ A ROS2 package/node for orchestrating tests of ROS2 simulation nodes and collect
 <!-- TEST4_TABLE_START -->
 | sim_type   | odom turn radius(m)   |   gt turn radius(m) | odom heading change(rad)   |   gt heading change(rad): |   sim time change(s) |   wall time change(s) |
 |:-----------|:----------------------|--------------------:|:---------------------------|--------------------------:|---------------------:|----------------------:|
-| gazebo     | 0                     |                0.04 | 5.03                       |                      5.1  |                10.04 |                 14.78 |
-| isaacsim   | -                     |                0.05 | -                          |                      0.94 |                10.05 |                 24.9  |
+| gazebo     | 0                     |                0.04 | 5.03                       |                      5.08 |                10.03 |                 14.75 |
+| isaacsim   | -                     |                0.08 | -                          |                      0.96 |                10.03 |                 24.76 |
 <!-- TEST4_TABLE_END -->
 
 <table>
@@ -125,8 +125,8 @@ A ROS2 package/node for orchestrating tests of ROS2 simulation nodes and collect
 <!-- TEST1_TABLE_START -->
 | sim_type   | odom turn radius(m)   |   gt turn radius(m) | odom heading change(rad)   |   gt heading change(rad): |   sim time change(s) |   wall time change(s) |
 |:-----------|:----------------------|--------------------:|:---------------------------|--------------------------:|---------------------:|----------------------:|
-| gazebo     | 1.0                   |                1    | 5.01                       |                      4.99 |                10.02 |                 14.6  |
-| isaacsim   | -                     |               46.01 | -                          |                      0.12 |                10.07 |                 24.51 |
+| gazebo     | 1.0                   |                1    | 5.06                       |                      5.04 |                10.07 |                  14.8 |
+| isaacsim   | -                     |               45.99 | -                          |                      0.12 |                 9.98 |                  24.3 |
 <!-- TEST1_TABLE_END -->
 
 <table>
@@ -155,8 +155,8 @@ A ROS2 package/node for orchestrating tests of ROS2 simulation nodes and collect
 <!-- TEST2_TABLE_START -->
 | sim_type   | odom turn radius(m)   |   gt turn radius(m) | odom heading change(rad)   |   gt heading change(rad): |   sim time change(s) |   wall time change(s) |
 |:-----------|:----------------------|--------------------:|:---------------------------|--------------------------:|---------------------:|----------------------:|
-| gazebo     | 2.0                   |                1.97 | 2.49                       |                      2.42 |                10.04 |                 14.68 |
-| isaacsim   | -                     |              298.07 | -                          |                      0.02 |                10.02 |                 24.37 |
+| gazebo     | 2.0                   |                1.97 | 2.51                       |                      2.45 |                10.03 |                 14.73 |
+| isaacsim   | -                     |              297.99 | -                          |                      0.02 |                 9.93 |                 24.43 |
 <!-- TEST2_TABLE_END -->
 
 <table>
@@ -185,8 +185,8 @@ A ROS2 package/node for orchestrating tests of ROS2 simulation nodes and collect
 <!-- TEST3_TABLE_START -->
 | sim_type   | odom turn radius(m)   |   gt turn radius(m) | odom heading change(rad)   |   gt heading change(rad): |   sim time change(s) |   wall time change(s) |
 |:-----------|:----------------------|--------------------:|:---------------------------|--------------------------:|---------------------:|----------------------:|
-| gazebo     | 4.0                   |                4.46 | 1.25                       |                       1.2 |                10    |                 14.92 |
-| isaacsim   | -                     |             1248.97 | -                          |                       0   |                 9.97 |                 24.33 |
+| gazebo     | 4.0                   |                4.46 | 1.25                       |                       1.2 |                10.02 |                 14.81 |
+| isaacsim   | -                     |             2197.49 | -                          |                       0   |                10.07 |                 24.46 |
 <!-- TEST3_TABLE_END -->
 
 <table>
@@ -216,25 +216,25 @@ A ROS2 package/node for orchestrating tests of ROS2 simulation nodes and collect
 <!-- GAZEBO_DATA_RATE_TABLE_START -->
 | topic                        |   count |   wall Hz |   sim Hz |
 |:-----------------------------|--------:|----------:|---------:|
-| /imu                         |     399 |     13.5  |    20.05 |
-| /d435_rgb_camera/image_raw   |     605 |     20.45 |    30.35 |
-| /d435_depth_camera/image_raw |     606 |     20.45 |    30.35 |
-| /scan                        |     200 |      6.77 |    10.05 |
-| /odom                        |    1995 |     67.4  |   100.05 |
-| /clock                       |   19944 |    672.95 |  1000.05 |
-| /tf                          |    2393 |     80.75 |   120.05 |
-| /gt_pose                     |    1460 |     49.29 |    73.27 |
+| /imu                         |     400 |     13.34 |    20.05 |
+| /d435_rgb_camera/image_raw   |     604 |     20.12 |    30.35 |
+| /d435_depth_camera/image_raw |     604 |     20.11 |    30.35 |
+| /scan                        |     200 |      6.66 |    10.05 |
+| /odom                        |    1999 |     66.63 |   100.05 |
+| /clock                       |   19930 |    662.7  |   999.85 |
+| /tf                          |    2401 |     79.78 |   119.75 |
+| /gt_pose                     |    1488 |     49.42 |    74.19 |
 <!-- GAZEBO_DATA_RATE_TABLE_END -->
 
 ### IsaacSim Sensor and data publish rates
 <!-- ISAAC_DATA_RATE_TABLE_START -->
 | topic               |   count |   wall Hz |   sim Hz |
 |:--------------------|--------:|----------:|---------:|
-| /imu                |     398 |     49.83 |   120.61 |
-| /rgb_camera/rgb     |     200 |     24.95 |    60.3  |
-| /depth_camera/depth |     200 |     24.99 |    60.3  |
-| /scan               |     398 |     49.84 |   120.61 |
-| /odom               |     398 |     49.84 |   120.61 |
-| /clock              |     398 |     49.84 |   120.61 |
-| /tf                 |    1192 |    150.4  |   361.21 |
+| /imu                |     400 |     49.83 |   120.6  |
+| /rgb_camera/rgb     |     200 |     24.97 |    60.3  |
+| /depth_camera/depth |     200 |     25.07 |    60.3  |
+| /scan               |     400 |     49.83 |   120.6  |
+| /odom               |     400 |     49.83 |   120.6  |
+| /clock              |     400 |     49.83 |   120.6  |
+| /tf                 |    1194 |    149.45 |   361.82 |
 <!-- ISAAC_DATA_RATE_TABLE_END -->

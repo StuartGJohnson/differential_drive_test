@@ -1,1 +1,1 @@
-{"sim_type":"gazebo","odom turn radius(m)":0.0,"gt turn radius(m)":0.0415782545,"odom heading change(rad)":5.0295932036,"gt heading change(rad):":5.1005792215,"sim time change(s)":10.04,"wall time change(s)":14.7834570408}
+{"sim_type":"gazebo","odom turn radius(m)":0.0,"gt turn radius(m)":0.0415967146,"odom heading change(rad)":5.0295954473,"gt heading change(rad):":5.0846556879,"sim time change(s)":10.03,"wall time change(s)":14.7513105869}

@@ -73,7 +73,10 @@ def main():
     isaac_time_dir = cfg["time_dir_isaac"]
     gazebo_dir = os.path.join(gazebo_home_dir, gazebo_time_dir)
     isaac_dir = os.path.join(isaac_home_dir, isaac_time_dir)
-    # copy data
+    # copy data - I have noticed this doesn't work without
+    # the delete first. Regardless of what AI tells you.
+    shutil.rmtree(gazebo_pkg_dir)
+    shutil.rmtree(isaac_pkg_dir)
     shutil.copytree(gazebo_dir, gazebo_pkg_dir, dirs_exist_ok=True)
     shutil.copytree(isaac_dir, isaac_pkg_dir, dirs_exist_ok=True)
 
