@@ -44,6 +44,8 @@ As noted above, running the publish node will update tables (and figures) in thi
 
 ### Robot self portrait
 
+The selfies are taken with the robot's own camera, by translating and rotating the camera pose relative to the camera body. Note I have not had time to resolve viewpoint differences - Gazebo and IsaacSim have different coordinate systems. Sun angles are different - these are controlled by code in the WorldGeneration repo and need to be updated for simulator differences. Robot colors and textures have not survived translation from Gazebo->IsaacSim.
+
 #### RGB Camera
 <table>
   <tr>
@@ -70,6 +72,10 @@ As noted above, running the publish node will update tables (and figures) in thi
 
 ### Transform trees
 
+Transform trees are similar, and may be sufficiently similar for the operation of localization SW stacks with both simulators. We shall see. The IsaacSim robot `.usda` file is derived from the gazebo `.urdf` file (after conversion from the `.xacro` file), but there is significant massaging after the use of conversion tools to get the robot articulation magic to work. See:
+
+[isaacsim simulation](https://github.com/StuartGJohnson/isaacsim_differential_drive_robot_4wheel)
+
 <table>
   <tr>
     <td align="center"><b>Gazebo</b></td>
@@ -87,6 +93,10 @@ As noted above, running the publish node will update tables (and figures) in thi
 
 ### Sensors - Depth Camera
 
+For the open-loop dynamics tests below, the world files (`.usda` and `.sdf`) are generated with the Perlin noise scale parameter set to 0.0, so no interesting things are generated. For the purposes of the open-loop dynamics tests, I did not want the robot bumping into things.
+
+Depth camera views are similar. These camera views should be the same resolution at 640x480. Apparently I am setting the wrong IsaacSim parameters to control image stream resolution. The depth camera data is clipped at 20m range, so the far wall is not seen.
+
 <table>
   <tr>
     <td align="center"><b>Gazebo</b></td>
@@ -99,6 +109,8 @@ As noted above, running the publish node will update tables (and figures) in thi
 </table>
 
 ### Sensors - RGB Camera
+
+RGB camera views are similar. Again, the resolution settings for IsaacSim are incorrect. Note that the sky and shadows are rendered differently.
 
 <table>
   <tr>
@@ -113,6 +125,8 @@ As noted above, running the publish node will update tables (and figures) in thi
 
 ### Sensors - Lidar
 
+Lidar sensors are quite similar. There is a 10m max range setting in Gazebo which causing the main difference.
+
 <table>
   <tr>
     <td align="center"><b>Gazebo</b></td>
@@ -125,6 +139,26 @@ As noted above, running the publish node will update tables (and figures) in thi
 </table>
 
 ### Dynamics - Open-Loop control 0m (in-place pivot) radius turn
+
+In the dynamics sections, I refer to odom and ground truth. Odom is the integrated position of the robot given that the (simulated) robot is modeled perfectly by a differential drive. Odom trajectories are perfect circles when the ratio of robot velocity and angular velocity is constant - which it is for these open-loop trajectories. In order to minimize any effects of wheel slippage at the beginning and end of the commanded trajectories, I smooth the trajectories with a logit sigmoid. Trajectory data also expunges the ramp-up and ramp-down periods from the data - before curvature and other estimates are made. Ground truth refers to the simulator's calculation of robot pose over time. This includes all the estimated physics - contacts, inertia, friction, etc. How the physical robot under- or over-steers will be addressed later.
+
+Skid-steer dynamics are a challenge for all simulators. Wheels/tires must allow a good deal of side-slip when turning, especially at tight turn radii. For Gazebo, I calibrated the open-loop differential drive controller by tweaking the wheel separation parameter. In short, a wider wheelbase can compensate for controller understeer - IF the understeer is linear in the commanded turn radius. This is the case for Gazebo, as can be seen in the following open-loop control sections. The calibration value for Gazebo is:
+        <pre>Rc = Rt * 1.62</pre>
+where Rc is the controller wheel separation value, and Rt is the true wheel separation value. The critical parameters for Gazebo to behave well (at all) in open-loop were the `<slip>` parameters, e.g.:
+
+    <gazebo reference="right_wheel_link">
+        <mu1>1.0</mu1>
+        <mu2>0.5</mu2>
+        <slip1>0.1</slip1>
+        <slip2>0.2</slip2>
+    </gazebo>
+
+For IsaacSim, I have used the same setting as for Gazebo. However, note from the sections on open-loop dynamics below, the IsaacSim understeering effect is much stronger than Gazebo, and is not linear in commanded turn radius. IsaacSim does not easily allow for wheel slip, as far as I can tell.
+
+In the in-place pivot test, Isaacsim managed about 20% of the commanded turn, its best performance across turn radii. Note the very curious ground truth "robot trajectory" plot of Gazebo. Hmm. Both of these movements are very small - the robot is mostly pivoting.
+
+In all of these open-loop test tables, the odom (Gazebo) turn radius is the radius of the integrated differential drive trajectory - so perfect circles. I managed somehow to only get ground truth (as far as I can tell!) out of IsaacSim - this can be fixed (I think) by adding an(other) odometry Action Graph to the IsaacSim code.
+
 <!-- TEST4_TABLE_START -->
 | sim_type   | odom turn radius(m)   |   gt turn radius(m) | odom heading change(rad)   |   gt heading change(rad): |   sim time change(s) |   wall time change(s) |
 |:-----------|:----------------------|--------------------:|:---------------------------|--------------------------:|---------------------:|----------------------:|
@@ -156,6 +190,8 @@ As noted above, running the publish node will update tables (and figures) in thi
 
 ### Dynamics - Open-Loop control 1m radius turn
 
+At a 1m radius commanded turn,  IsaacSim is already severely understeering - it is just managing a 46m radius turn. Gazebo has initial problems - it would suggest that dynamic friction plays a roll in side slipping. The Gazebo open-loop controller is still well calibrated.
+
 <!-- TEST1_TABLE_START -->
 | sim_type   | odom turn radius(m)   |   gt turn radius(m) | odom heading change(rad)   |   gt heading change(rad): |   sim time change(s) |   wall time change(s) |
 |:-----------|:----------------------|--------------------:|:---------------------------|--------------------------:|---------------------:|----------------------:|
@@ -186,6 +222,9 @@ As noted above, running the publish node will update tables (and figures) in thi
 </table>
 
 ### Dynamics - Open-Loop control 2m radius turn
+
+At a 2m radius commanded turn,  IsaacSim is producing a ~300m radius turn - this is pretty much a straight trajectory.  The Gazebo open-loop controller is still well calibrated.
+
 <!-- TEST2_TABLE_START -->
 | sim_type   | odom turn radius(m)   |   gt turn radius(m) | odom heading change(rad)   |   gt heading change(rad): |   sim time change(s) |   wall time change(s) |
 |:-----------|:----------------------|--------------------:|:---------------------------|--------------------------:|---------------------:|----------------------:|
@@ -216,6 +255,9 @@ As noted above, running the publish node will update tables (and figures) in thi
 </table>
 
 ### Dynamics - Open-Loop control 4m radius turn
+
+At a 4m radius commanded turn,  IsaacSim is producing a !2200m radius turn. The Gazebo open-loop controller is still well calibrated.
+
 <!-- TEST3_TABLE_START -->
 | sim_type   | odom turn radius(m)   |   gt turn radius(m) | odom heading change(rad)   |   gt heading change(rad): |   sim time change(s) |   wall time change(s) |
 |:-----------|:----------------------|--------------------:|:---------------------------|--------------------------:|---------------------:|----------------------:|
@@ -246,6 +288,8 @@ As noted above, running the publish node will update tables (and figures) in thi
 </table>
 
 ### Gazebo Sensor and data publish rates
+
+There are differences in the rate limit control settings between the two simulators. For example, the lidar scan update rate is set to 10Hz in Gazebo, and the camera update rate is set to 30Hz. Although it does take IsaacSim longer to simulate a task (see the open-loop control sections above), there are still many settings to adjust - and it does look like IsaacSim is generating data a lot faster in simulation time. We shall see if any performance advantages hold up under further scrutiny.
 
 <!-- GAZEBO_DATA_RATE_TABLE_START -->
 | topic                        |   count |   wall Hz |   sim Hz |
