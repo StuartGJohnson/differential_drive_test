@@ -14,6 +14,8 @@ from rosgraph_msgs.msg import Clock
 from ament_index_python.packages import get_package_share_directory
 import yaml
 import argparse
+import shutil
+import glob
 
 def wait_for_clock(timeout=20.0):
     rclpy.init()
@@ -57,22 +59,35 @@ def main():
         yaml.dump(cfg, file, sort_keys=False)
 
     # cycle through the tests
+    first_pass = True
     for test in cfg['tests']:
         test_dir = os.path.join(test_home_dir, test['name'])
         os.makedirs(test_dir, exist_ok=True)
         sim_type = test['sim_type']
         world_file = test['world_file']
-
-        print("Starting simulator...")
+        
         if sim_type == "gazebo":
+            #if first_pass:
+            print("Starting simulator...")
             sim_proc = subprocess.Popen(
                 ["ros2",
-                 "launch",
-                 "gazebo_differential_drive_robot_4wheel",
-                 "robot.launch.py",
-                 f"world:={world_file}"],
+                "launch",
+                "gazebo_differential_drive_robot_4wheel",
+                "robot.launch.py",
+                f"world:={world_file}"],
                 preexec_fn=os.setsid)
+            # not quite working - the simulator resets,
+            # but can't reset the robot
+            # else:
+            #     print("Resetting simulator...")
+            #     subprocess.run(
+            #         ["ros2",
+            #         "run",
+            #         "gazebo_differential_drive_robot_4wheel",
+            #         "reset_and_respawn_node"], check=True)
         elif sim_type == "isaacsim":
+            # todo: how to reset isaacsim?
+            print("Starting simulator...")
             sim_proc = subprocess.Popen(
                 ["ros2",
                  "launch",
@@ -89,6 +104,54 @@ def main():
             print("Timed out waiting for clock.")
             os.killpg(os.getpgid(sim_proc.pid), signal.SIGINT)
             return
+
+        if first_pass:
+            # let tf settle a bit for th transform display code
+            time.sleep(5)
+            first_pass = False
+            print("Running transform display code...")
+            subprocess.run(["ros2",
+                            "run",
+                            "tf2_tools",
+                            "view_frames"], check=True)
+            latest_gv = max(glob.glob("frames_*.gv"), key=os.path.getmtime)
+            gv_target_file = os.path.join(test_home_dir,f"frames_{sim_type}.gv")
+            gv_target_file_clean = os.path.join(test_home_dir,f"frames_{sim_type}_clean.gv")
+            svg_target_file = os.path.join(test_home_dir,f"frames_{sim_type}.svg")
+            jpg_target_file = os.path.join(test_home_dir,f"frames_{sim_type}.jpg")
+            shutil.copy(latest_gv, gv_target_file)
+            # Clean the .gv file and convert to SVG/JPG
+            with open(gv_target_file) as f:
+                lines = f.readlines()
+            with open(gv_target_file_clean, "w") as f:
+                for line in lines:
+                    # Remove edge labels
+                    if "label=" in line:
+                        line = line.split("[")[0] + ";\n"
+                    f.write(line)
+            # convert to svg and jpg
+            subprocess.run(["dot",
+                            "-Tsvg",
+                            gv_target_file_clean,
+                            "-o",
+                            svg_target_file], check=True)
+            subprocess.run(["dot",
+                            "-Tjpg",
+                            gv_target_file_clean,
+                            "-o",
+                            jpg_target_file], check=True)
+
+            # now check publish rates
+            print("Running topic rate node...")
+            subprocess.run(["ros2",
+                            "run",
+                            "differential_drive_test",
+                            "multi_topic_rate_node.py",
+                            "--ros-args",
+                            "-p", f"sim_type:={sim_type}",
+                            ])
+            shutil.copy("topic_rates.json", os.path.join(test_home_dir,"topic_rates.json"))
+
 
         print("Running sensor check node...")
         subprocess.run(["ros2",

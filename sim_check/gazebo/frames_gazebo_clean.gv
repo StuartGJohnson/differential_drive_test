@@ -1,0 +1,17 @@
+digraph G {
+"differential_drive_robot_4wheel/odom" -> "base_footprint";
+"base_footprint" -> "body_link";
+"body_link" -> "battery_link";
+"orin_link" -> "d435_link";
+"battery_link" -> "orin_link";
+"orin_link" -> "gps_link";
+"orin_link" -> "lidar_link";
+"body_link" -> "left_wheel2_link";
+"body_link" -> "left_wheel_link";
+"body_link" -> "right_wheel2_link";
+"body_link" -> "right_wheel_link";
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1750723257.1775424"[ shape=plaintext ] ;
+}->"differential_drive_robot_4wheel/odom";
+}

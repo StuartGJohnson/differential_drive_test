@@ -1,4 +1,4 @@
-output_home_dir: "/home/sjohnson/sim_check"
+output_home_dir: "/home/sjohnson/sim_check_gazebo"
 tests:
   - name: test_1
     angular_velocity: 1.0

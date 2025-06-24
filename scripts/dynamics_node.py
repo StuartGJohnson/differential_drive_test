@@ -23,6 +23,7 @@ import yaml
 import numpy as np
 import matplotlib.pyplot as plt
 from ament_index_python.packages import get_package_share_directory
+import pandas as pd
 
 class CircleFit:
     # see https://scipy-cookbook.readthedocs.io/items/Least_Squares_Circle.html
@@ -266,6 +267,7 @@ class DynamicsNode(Node):
         # files
         mat_file = os.path.join(self.report_dir, "dynamics.mat")
         report_file = os.path.join(self.report_dir, "dynamics_report.txt")
+        report_file_json = os.path.join(self.report_dir, "dynamics_report.json")
         plot_root = os.path.join(self.report_dir, "dynamics")
 
         # write the time series to a matlab .mat file - for matlab analysis
@@ -276,7 +278,7 @@ class DynamicsNode(Node):
         scipy.io.savemat(mat_file, data_dict)
 
         # analyze the data for a  general analysis of trajectory curvature
-        # and integrated turning rate - not this assumes a lot about what
+        # and integrated turning rate - note this assumes a lot about what
         # the simulated trajectory looks like
 
         # crop the data to steady state intervals
@@ -306,19 +308,19 @@ class DynamicsNode(Node):
         delta_time = np.max(self.data.t)-np.min(self.data.t)
         delta_gt_time = np.max(self.gt_data.t) - np.min(self.gt_data.t)
         delta_wall_time = self.wall_stop_time - self.wall_start_time
+        # to stdout
         self.make_report(data_r, gt_r,
                          data_angle_change, gt_angle_change,
                          mean_est,
                          delta_time, delta_gt_time,
-                         delta_wall_time, f=None)
+                         delta_wall_time, "", "")
 
-        # serialize to file
-        with open(report_file, 'w') as f:
-            self.make_report(data_r, gt_r,
-                    data_angle_change, gt_angle_change,
-                    mean_est,
-                    delta_time, delta_gt_time,
-                    delta_wall_time, f=f)
+        # serialize to file(s)
+        self.make_report(data_r, gt_r,
+                data_angle_change, gt_angle_change,
+                mean_est,
+                delta_time, delta_gt_time,
+                delta_wall_time, report_file, report_file_json)
 
         self.plot(plot_root)
 
@@ -327,13 +329,30 @@ class DynamicsNode(Node):
                     data_angle_change, gt_angle_change,
                     mean_est,
                     delta_time, delta_gt_time,
-                    delta_wall_time, f=None):
+                    delta_wall_time, report_file="", pandas_path=""):
+        f = None
+        if report_file != "":
+            f = open(report_file, 'w')
         print("data, ground truth turn radii (meters): ", data_r, gt_r, file=f)
         print("data, ground truth angle change (radians): ", data_angle_change, gt_angle_change, file=f)
         print("wheel separation calibration factor: ", mean_est, file=f)
         print('data, ground truth sim time change(seconds): ', delta_time, delta_gt_time, file=f)
         print('wall time change(seconds): ', delta_wall_time, file=f)
-
+        if f is not None:
+            f.close()
+        # and to pandas
+        if pandas_path != "":
+            data_lod = [{
+                "sim_type": self.sim_type,
+                "odom turn radius(m)": data_r if self.sim_type == 'gazebo' else "-",
+                "gt turn radius(m)": gt_r,
+                "odom heading change(rad)": data_angle_change if self.sim_type == 'gazebo' else "-",
+                "gt heading change(rad):": gt_angle_change,
+                "sim time change(s)": delta_time,
+                "wall time change(s)": delta_wall_time}]
+            df = pd.DataFrame(data_lod)
+            # save the table
+            df.to_json(pandas_path, orient="records", lines=True)
 
     def plot(self, filename_base: str):
         # plot up the data and save to files for inclusion in
@@ -351,25 +370,43 @@ class DynamicsNode(Node):
         gt_yref = gty[0]
         gt_tref = gtt[0]
         plt.figure()
-        plt.plot(x - xref, y - yref, 'r+')
-        plt.plot(gtx - gt_xref, gty - gt_yref, 'g+')
-        plt.xlabel('x (m)')
-        plt.ylabel('y (m)')
-        plt.title('robot trajectory')
-        plt.axis('equal')
-        plt.legend(['int. odom','ground truth'])
+        if self.sim_type == 'gazebo':
+            plt.plot(x - xref, y - yref, 'r+')
+            plt.plot(gtx - gt_xref, gty - gt_yref, 'g+')
+            plt.xlabel('x (m)')
+            plt.ylabel('y (m)')
+            plt.title('robot trajectory')
+            plt.axis('equal')
+            plt.legend(['int. odom','ground truth'])
+        elif self.sim_type == 'isaacsim':
+            # isaacsim is only giving me ground truth
+            #plt.plot(x - xref, y - yref, 'r+')
+            plt.plot(gtx - gt_xref, gty - gt_yref, 'g+')
+            plt.xlabel('x (m)')
+            plt.ylabel('y (m)')
+            plt.title('robot trajectory')
+            plt.axis('equal')
+            plt.legend(['ground truth'])
         plt.savefig(filename_base + "_traj.jpg")
         #plt.show()
 
         plt.figure()
         angle = np.unwrap(self.data.angle)
         gt_angle = np.unwrap(self.gt_data.angle)
-        plt.plot(t-tref, angle, 'r+')
-        plt.plot(gtt-gt_tref, gt_angle, 'g+')
-        plt.xlabel('sim time (sec)')
-        plt.ylabel('heading angle (radians)')
-        plt.title('robot heading angle')
-        plt.legend(['int. odom', 'ground truth'])
+        if self.sim_type == 'gazebo':
+            plt.plot(t-tref, angle, 'r+')
+            plt.plot(gtt-gt_tref, gt_angle, 'g+')
+            plt.xlabel('sim time (sec)')
+            plt.ylabel('heading angle (radians)')
+            plt.title('robot heading angle')
+            plt.legend(['int. odom', 'ground truth'])
+        elif self.sim_type == 'isaacsim':
+            #plt.plot(t-tref, angle, 'r+')
+            plt.plot(gtt-gt_tref, gt_angle, 'g+')
+            plt.xlabel('sim time (sec)')
+            plt.ylabel('heading angle (radians)')
+            plt.title('robot heading angle')
+            plt.legend(['ground truth'])           
         plt.savefig(filename_base + "_angle.jpg")
         #plt.show()
 

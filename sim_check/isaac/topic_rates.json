@@ -1,0 +1,7 @@
+{"topic":"\/imu","count":398,"wall Hz":50.0896991473,"sim Hz":120.6060543199}
+{"topic":"\/rgb_camera\/rgb","count":200,"wall Hz":25.0964458792,"sim Hz":60.3015043863}
+{"topic":"\/depth_camera\/depth","count":200,"wall Hz":25.0967664825,"sim Hz":60.3015043863}
+{"topic":"\/scan","count":398,"wall Hz":50.0949225555,"sim Hz":120.6060543199}
+{"topic":"\/odom","count":398,"wall Hz":50.091615523,"sim Hz":120.6060543199}
+{"topic":"\/clock","count":398,"wall Hz":50.124800329,"sim Hz":120.6060543199}
+{"topic":"\/tf","count":1194,"wall Hz":150.2368744004,"sim Hz":361.8181629598}

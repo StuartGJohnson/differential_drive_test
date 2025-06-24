@@ -1,0 +1,30 @@
+output_home_dir: /home/sjohnson/sim_check_isaac
+tests:
+- name: test_1
+  angular_velocity: 1.0
+  linear_velocity: 1.0
+  max_time: 10.0
+  rise_time: 2.5
+  sim_type: isaacsim
+  world_file: /home/sjohnson/WorldGeneration/scene_empty.usda
+- name: test_2
+  angular_velocity: 0.5
+  linear_velocity: 1.0
+  max_time: 10.0
+  rise_time: 2.5
+  sim_type: isaacsim
+  world_file: /home/sjohnson/WorldGeneration/scene_empty.usda
+- name: test_3
+  angular_velocity: 0.25
+  linear_velocity: 1.0
+  max_time: 10.0
+  rise_time: 2.5
+  sim_type: isaacsim
+  world_file: /home/sjohnson/WorldGeneration/scene_empty.usda
+- name: test_4
+  angular_velocity: 1.0
+  linear_velocity: 0.0
+  max_time: 10.0
+  rise_time: 2.5
+  sim_type: isaacsim
+  world_file: /home/sjohnson/WorldGeneration/scene_empty.usda
