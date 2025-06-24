@@ -21,7 +21,7 @@ The world generation repo is used to generate worlds for robot testing and explo
 The core functionality of this package is in `scripts/check_robot_sim.py`. This ROS2 node is executed as follows:
 - Set the appropriate parameters in, for example,`config/sim_check_gazebo.yml`
 - Run each series of tests via:
-  <pre>ros2 run differential_drive_test check_robot_sim.py --config config/sim_check_gazebo.yml`</pre>
+  <pre>ros2 run differential_drive_test check_robot_sim.py --config config/sim_check_gazebo.yml</pre>
   or
   <pre>ros2 run differential_drive_test check_robot_sim.py --config config/sim_check_isaac.yml</pre>
 - Update the appropriate parameters in, for example, `config/publish.yml`
