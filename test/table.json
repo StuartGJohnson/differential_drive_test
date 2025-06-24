@@ -1,0 +1,3 @@
+{"name":"Sensor A","accuracy":0.98,"freq":"10 Hz"}
+{"name":"Sensor B","accuracy":0.92,"freq":"20 Hz"}
+{"name":"Sensor C","accuracy":"-","freq":"20 Hz"}

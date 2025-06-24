@@ -1,4 +1,6 @@
 digraph G {
+"World" -> "odom";
+"odom" -> "base_footprint";
 "World" -> "battery_link";
 "battery_link" -> "body_link";
 "battery_link" -> "orin_link";
@@ -9,10 +11,8 @@ digraph G {
 "orin_link" -> "d435_link";
 "orin_link" -> "gps_link";
 "orin_link" -> "lidar_link";
-"World" -> "odom";
-"odom" -> "base_footprint";
 edge [style=invis];
  subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
-"Recorded at time: 1750723452.0051835"[ shape=plaintext ] ;
+"Recorded at time: 1750784788.2346773"[ shape=plaintext ] ;
 }->"World";
 }

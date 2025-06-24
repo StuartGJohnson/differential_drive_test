@@ -52,43 +52,6 @@ class MyTestCase(unittest.TestCase):
         plt.savefig("sensor_table.png", dpi=300)
         plt.close()
 
-    @unittest.skip("think about this before running it, it generates files")
-    def test_pandas_readme_update(self):
-        README_PATH = "../README.md"
-
-        # 1. Create your table (could come from files)
-        d = np.random.rand(3)
-        df = pd.DataFrame([
-            {"Sensor": "A", "Accuracy": d[0], "Rate": "10 Hz"},
-            {"Sensor": "B", "Accuracy": d[1], "Rate": "20 Hz"},
-            {"Sensor": "C", "Accuracy": d[2], "Rate": "15 Hz"},
-        ])
-
-        dfr = df.round(2)
-        markdown_table = dfr.to_markdown(index=False)
-
-        # 2. Load the README and inject the table between markers
-        with open(README_PATH, "r") as f:
-            lines = f.readlines()
-
-        try:
-            start_idx = lines.index("<!-- TABLE_START -->\n") + 1
-            end_idx = lines.index("<!-- TABLE_END -->\n")
-        except ValueError:
-            raise RuntimeError("README.md is missing <!-- TABLE_START --> or <!-- TABLE_END --> markers.")
-
-        # 3. Replace old table content
-        table_block = markdown_table.splitlines(keepends=False)
-        table_block = [line + "\n" for line in table_block]
-
-        new_lines = lines[:start_idx] + table_block + lines[end_idx:]
-
-        # 4. Save updated README
-        with open(README_PATH, "w") as f:
-            f.writelines(new_lines)
-
-        print("✅ README.md updated with new table.")
-
     def test_msg_import(self):
         topic_map = {
             "/imu": "sensor_msgs/msg/Imu",
@@ -239,7 +202,6 @@ class MyTestCase(unittest.TestCase):
         thing = "this is:" + ".a thing"
         print(thing)
 
-    @unittest.skip("think about this before running it, it generates files")
     def test_make_report(self):
         rclpy.init()
         node = DynamicsNode()
@@ -249,9 +211,8 @@ class MyTestCase(unittest.TestCase):
         node.destroy_node()
         rclpy.shutdown()
 
-    @unittest.skip("think about this before running it, it generates files")
     def test_update_markdown(self):
-        README_PATH = "../README.md"
+        README_PATH = "README_test.md"
 
         df1 = pd.read_json("../sim_check/gazebo/test_1/dynamics_report.json", orient="records", lines=True).round(2)
         df2 = pd.read_json("../sim_check/isaac/test_1/dynamics_report.json", orient="records", lines=True).round(2)

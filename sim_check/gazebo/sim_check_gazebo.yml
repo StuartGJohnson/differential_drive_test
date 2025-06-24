@@ -1,4 +1,7 @@
 output_home_dir: /home/sjohnson/sim_check_gazebo
+sim_type: gazebo
+image_of_robot_file: robot_third_person.xacro
+image_of_robot_world: /home/sjohnson/WorldGeneration/scene_empty.sdf
 tests:
 - name: test_1
   angular_velocity: 1.0
@@ -6,6 +9,7 @@ tests:
   max_time: 10.0
   rise_time: 2.5
   sim_type: gazebo
+  robot_file: robot.xacro
   world_file: /home/sjohnson/WorldGeneration/scene_empty.sdf
 - name: test_2
   angular_velocity: 0.5
@@ -13,6 +17,7 @@ tests:
   max_time: 10.0
   rise_time: 2.5
   sim_type: gazebo
+  robot_file: robot.xacro
   world_file: /home/sjohnson/WorldGeneration/scene_empty.sdf
 - name: test_3
   angular_velocity: 0.25
@@ -20,6 +25,7 @@ tests:
   max_time: 10.0
   rise_time: 2.5
   sim_type: gazebo
+  robot_file: robot.xacro
   world_file: /home/sjohnson/WorldGeneration/scene_empty.sdf
 - name: test_4
   angular_velocity: 1.0
@@ -27,4 +33,5 @@ tests:
   max_time: 10.0
   rise_time: 2.5
   sim_type: gazebo
+  robot_file: robot.xacro
   world_file: /home/sjohnson/WorldGeneration/scene_empty.sdf

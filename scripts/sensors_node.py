@@ -96,8 +96,13 @@ class SensorsNode(Node):
             cv2.imwrite(os.path.join(self.report_dir, 'rgb_image.jpg'), cv_rgb)
         if self.depth_image_valid:
             depth_image = self.bridge.imgmsg_to_cv2(self.depth_image, desired_encoding='passthrough')
-            depth_array = np.clip(np.array(depth_image,dtype=np.float32),0,20)
-            cv_depth = (depth_array / 20.0 * 255).astype(np.uint8)
+            depth_image_np = np.array(depth_image,dtype=np.float32)
+            # for close-ups
+            depth_image_max = np.nanmax(depth_image_np)
+            # not-so-close-up max (20m)
+            depth_image_max = min(20.0, depth_image_max)
+            depth_array = np.clip(depth_image_np,0, depth_image_max)
+            cv_depth = (depth_array / depth_image_max * 255).astype(np.uint8)
             cv2.imwrite(os.path.join(self.report_dir, 'depth_image.jpg'), cv_depth)
         if self.scan_valid:
             scan_converter = LaserProjection()

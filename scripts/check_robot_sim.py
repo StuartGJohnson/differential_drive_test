@@ -34,6 +34,43 @@ def wait_for_clock(timeout=20.0):
     rclpy.shutdown()
     return got_clock
 
+def startup_sim(sim_type: str, robot_file: str, world_file: str) -> subprocess.Popen:
+    if sim_type == "gazebo":
+        # if first_pass:
+        print("Starting simulator...")
+        sim_proc = subprocess.Popen(
+            ["ros2",
+             "launch",
+             "gazebo_differential_drive_robot_4wheel",
+             "robot.launch.py",
+             f"world:={world_file}",
+             f"robot:={robot_file}"],
+            preexec_fn=os.setsid)
+        # not quite working - the simulator resets,
+        # but can't reset the robot
+        # else:
+        #     print("Resetting simulator...")
+        #     subprocess.run(
+        #         ["ros2",
+        #         "run",
+        #         "gazebo_differential_drive_robot_4wheel",
+        #         "reset_and_respawn_node"], check=True)
+    elif sim_type == "isaacsim":
+        # todo: how to reset isaacsim?
+        print("Starting simulator...")
+        sim_proc = subprocess.Popen(
+            ["ros2",
+             "launch",
+             "isaacsim_differential_drive_robot_4wheel",
+             "isaac_sim.launch.py",
+             f"world:={world_file}",
+             f"robot:={robot_file}"],
+            preexec_fn=os.setsid)
+    else:
+        print("unknown simulator type")
+        sim_proc = None
+    return sim_proc
+
 def main():
     parser = argparse.ArgumentParser(description='Simple orchestrator')
     parser.add_argument('--config', type=str, required=True, help='Path to config file')
@@ -58,6 +95,37 @@ def main():
     with open(cfg_file_out, 'w') as file:
         yaml.dump(cfg, file, sort_keys=False)
 
+    # first, get a shot of the robot
+    sim_type = cfg['sim_type']
+    world_file = cfg['image_of_robot_world']
+    robot_file = cfg['image_of_robot_file']
+
+    sim_proc_1 = startup_sim(sim_type, robot_file, world_file)
+
+    if sim_proc_1 is not None:
+        print("Waiting for /clock...")
+        if not wait_for_clock():
+            print("Timed out waiting for clock.")
+            os.killpg(os.getpgid(sim_proc_1.pid), signal.SIGINT)
+            return
+
+        # let the sim settle a bit
+        time.sleep(5)
+
+        print("Running sensor check node...")
+        subprocess.run(["ros2",
+                        "run",
+                        "differential_drive_test",
+                        "sensors_node.py",
+                        "--ros-args",
+                        "-p", f"sim_type:={sim_type}",
+                        "-p", f"report_dir:={test_home_dir}",
+                        ])
+
+        print("Shutting down robot image simulator...")
+        os.killpg(os.getpgid(sim_proc_1.pid), signal.SIGINT)
+        sim_proc_1.wait()
+
     # cycle through the tests
     first_pass = True
     for test in cfg['tests']:
@@ -65,39 +133,9 @@ def main():
         os.makedirs(test_dir, exist_ok=True)
         sim_type = test['sim_type']
         world_file = test['world_file']
-        
-        if sim_type == "gazebo":
-            #if first_pass:
-            print("Starting simulator...")
-            sim_proc = subprocess.Popen(
-                ["ros2",
-                "launch",
-                "gazebo_differential_drive_robot_4wheel",
-                "robot.launch.py",
-                f"world:={world_file}"],
-                preexec_fn=os.setsid)
-            # not quite working - the simulator resets,
-            # but can't reset the robot
-            # else:
-            #     print("Resetting simulator...")
-            #     subprocess.run(
-            #         ["ros2",
-            #         "run",
-            #         "gazebo_differential_drive_robot_4wheel",
-            #         "reset_and_respawn_node"], check=True)
-        elif sim_type == "isaacsim":
-            # todo: how to reset isaacsim?
-            print("Starting simulator...")
-            sim_proc = subprocess.Popen(
-                ["ros2",
-                 "launch",
-                 "isaacsim_differential_drive_robot_4wheel",
-                 "isaac_sim.launch.py",
-                 f"world:={world_file}"],
-                preexec_fn=os.setsid)
-        else:
-            print("unknown simulator type")
-            break
+        robot_file = test['robot_file']
+
+        sim_proc = startup_sim(sim_type, robot_file, world_file)
 
         print("Waiting for /clock...")
         if not wait_for_clock():

@@ -1,0 +1,5 @@
+data, ground truth turn radii (meters):  1 1
+data, ground truth angle change (radians):  2 2
+wheel separation calibration factor:  42
+data, ground truth sim time change(seconds):  3 3
+wall time change(seconds):  4
