@@ -48,7 +48,7 @@ As noted above, running the publish node will update tables (and figures) in thi
 
 ### Robot self portrait
 
-The selfies are taken with the robot's own camera, by translating and rotating the camera pose relative to the camera body. Note I have not had time to resolve viewpoint differences - Gazebo and IsaacSim have different coordinate systems. Sun angles are different - these are controlled by code in the WorldGeneration repo and need to be updated for simulator differences. Robot colors and textures have not survived translation from Gazebo->IsaacSim.
+The selfies are taken with the robot's own camera, by translating and rotating the camera pose relative to the camera body. These views are slightly diffferent at the moment - Gazebo and IsaacSim have different coordinate systems - one of the challenges of managing two simulators. Sun angles are different - these are controlled by code in the WorldGeneration repo and need to be updated for simulator differences. Robot colors and textures have not survived translation from the robot xacro (Gazebo) to usda files (IsaacSim).
 
 #### RGB Camera
 <table>
