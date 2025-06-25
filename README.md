@@ -16,6 +16,10 @@ The world generation repo is used to generate worlds for robot testing and explo
 
 [WorldGeneration](https://github.com/StuartGJohnson/WorldGeneration)
 
+See also:
+- [requirements.txt](requirements.txt)
+- [ros2_pkg_list.txt](ros2_pkg_list.txt)
+
 ## Usage
 
 The core functionality of this package is in `scripts/check_robot_sim.py`. This ROS2 node is executed as follows:
