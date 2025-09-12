@@ -94,6 +94,17 @@ class MultiTopicRateNode(Node):
                 "/tf": "tf2_msgs/msg/TFMessage",
                 "/gt_pose": "geometry_msgs/msg/PoseStamped"
             }
+        elif self.sim_type == "robot":
+            topic_type_dict = {
+                "/imu/data_raw": "sensor_msgs/msg/Imu",
+                #"/d435_rgb_camera/image_raw": "sensor_msgs/msg/Image",
+                #"/d435_depth_camera/image_raw": "sensor_msgs/msg/Image",
+                #"/scan": "sensor_msgs/msg/LaserScan",
+                "/odom": "nav_msgs/msg/Odometry",
+                #"/clock": "rosgraph_msgs/msg/Clock",
+                "/tf": "tf2_msgs/msg/TFMessage"
+                #"/gt_pose": "geometry_msgs/msg/PoseStamped"
+            }            
         else:
             self.done_event.set()
 

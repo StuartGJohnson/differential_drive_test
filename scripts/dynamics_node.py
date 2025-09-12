@@ -144,8 +144,7 @@ class TimeTrajectory:
 class DynamicsNode(Node):
     def __init__(self):
         super().__init__(
-            'dynamics_node',
-            parameter_overrides=[Parameter("use_sim_time",Parameter.Type.BOOL, True)]
+            'dynamics_node'
         )
         self.start_time = np.nan
         self.wall_start_time = np.nan
@@ -184,6 +183,9 @@ class DynamicsNode(Node):
         elif self.sim_type == 'gazebo':
             self.adj_omega = 1.0
             self.source_xform_frame = 'differential_drive_robot_4wheel/odom'
+        elif self.sim_type == 'robot':
+            self.adj_omega = 1.0
+            self.source_xform_frame = 'odom'
         else:
             print("unknown simulator type")
             self.done=True
@@ -195,6 +197,8 @@ class DynamicsNode(Node):
         # todo: for isaacsim, is seems both the tf value and the odom value are ground truth. fix
         if self.sim_type == "isaacsim":
             # this is the same as the /tf value for isaacsim
+            self.listener_gt = self.create_subscription(Odometry, '/odom', self.process_odom, 10)
+        elif self.sim_type == 'robot':
             self.listener_gt = self.create_subscription(Odometry, '/odom', self.process_odom, 10)
         else:
             self.listener_gt = self.create_subscription(PoseStamped, '/gt_pose', self.process_gt, 10)
@@ -387,6 +391,15 @@ class DynamicsNode(Node):
             plt.title('robot trajectory')
             plt.axis('equal')
             plt.legend(['ground truth'])
+        elif self.sim_type == 'robot':
+            # isaacsim is only giving me odom (for now)
+            #plt.plot(x - xref, y - yref, 'r+')
+            plt.plot(gtx - gt_xref, gty - gt_yref, 'g+')
+            plt.xlabel('x (m)')
+            plt.ylabel('y (m)')
+            plt.title('robot trajectory')
+            plt.axis('equal')
+            plt.legend(['int. odom'])
         plt.savefig(filename_base + "_traj.jpg")
         #plt.show()
 
@@ -406,7 +419,14 @@ class DynamicsNode(Node):
             plt.xlabel('sim time (sec)')
             plt.ylabel('heading angle (radians)')
             plt.title('robot heading angle')
-            plt.legend(['ground truth'])           
+            plt.legend(['ground truth'])
+        if self.sim_type == 'robot':
+            #plt.plot(t-tref, angle, 'r+')
+            plt.plot(gtt-gt_tref, gt_angle, 'g+')
+            plt.xlabel('sim time (sec)')
+            plt.ylabel('heading angle (radians)')
+            plt.title('robot heading angle')   
+            plt.legend(['int. odom'])   
         plt.savefig(filename_base + "_angle.jpg")
         #plt.show()
 

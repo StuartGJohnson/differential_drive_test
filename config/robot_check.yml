@@ -1,0 +1,30 @@
+output_home_dir: "/home/sjohnson/robot_check_safe"
+tests:
+  - name: test_1
+    angular_velocity: 0.5
+    linear_velocity: 0.5
+    max_time: 10.0
+    rise_time: 2.5
+    robot_file: "robot.xacro"
+    world_file: "/home/sjohnson/WorldGeneration/scene_empty.usda"
+  - name: test_2
+    angular_velocity: 0.25
+    linear_velocity: 0.5
+    max_time: 10.0
+    rise_time: 2.5
+    robot_file: "robot.xacro"
+    world_file: "/home/sjohnson/WorldGeneration/scene_empty.usda"
+  - name: test_3
+    angular_velocity: 0.125
+    linear_velocity: 0.5
+    max_time: 10.0
+    rise_time: 2.5
+    robot_file: "robot.xacro"
+    world_file: "/home/sjohnson/WorldGeneration/scene_empty.usda"
+  - name: test_4
+    angular_velocity: 1.0
+    linear_velocity: 0.0
+    max_time: 10.0
+    rise_time: 2.5
+    robot_file: "robot.xacro"
+    world_file: "/home/sjohnson/WorldGeneration/scene_empty.usda"

@@ -54,6 +54,14 @@ class SensorsNode(Node):
             self.source_xform_frame = 'differential_drive_robot_4wheel/odom'
             self.depth_topic = '/d435_depth_camera/image_raw'
             self.rgb_topic = '/d435_rgb_camera/image_raw'
+        elif self.sim_type == 'robot':
+            self.adj_omega = 1.0
+            self.source_xform_frame = 'differential_drive_robot_4wheel/odom'
+            self.depth_topic = '/d435_depth_camera/image_raw'
+            self.rgb_topic = '/d435_rgb_camera/image_raw'
+            # temporary - the camera is not plugged in yet
+            self.done_depth = True
+            self.done_rgb = True
         else:
             print("unknown simulator type")
             self.done=True

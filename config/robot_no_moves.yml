@@ -1,0 +1,10 @@
+output_home_dir: "/home/sjohnson/robot_check_safe"
+sim_type: "robot"
+tests:
+  - name: test_1
+    angular_velocity: 0.5
+    linear_velocity: 0.5
+    max_time: 0.0
+    rise_time: 2.5
+    robot_file: "robot.xacro"
+    world_file: "/home/sjohnson/WorldGeneration/scene_empty.usda"
