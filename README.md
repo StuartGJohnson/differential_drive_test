@@ -163,7 +163,7 @@ In the in-place pivot test, Isaacsim managed about 20% of the commanded turn, it
 
 In all of these open-loop test tables, the odom (Gazebo) turn radius is the radius of the integrated differential drive trajectory - so perfect circles. I managed somehow to only get ground truth (as far as I can tell!) out of IsaacSim - this can be fixed (I think) by adding an(other) odometry Action Graph to the IsaacSim code.
 
-Importantly, the Gazebo differential drive controller (in this version of Gazebo) does not calculate odometry using the wheel separation value input to the controller. The Gazebo differential drive controller computes the integrals of the angular and linear velocity inputs (via /cmd_vel) and publishes these as /odom. It does not, as some documentation might suggest, compute the odometry from individual applied wheel velocities (which would require the wheel separation value). The Gazebo (and IsaacSim) controllers DO use the wheel separation value to compute wheel angular velocities, however.
+The Gazebo differential drive plugin computes the odometry from individual wheel velocities, translated to linear and angular velocity via the inverse kinematics. Since the wheel velocities are computed from the forward kinematics, this is generally very nearly equivalent to integrating /cmd_vel.
 
 <!-- TEST4_TABLE_START -->
 | sim_type   | odom turn radius(m)   |   gt turn radius(m) | odom heading change(rad)   |   gt heading change(rad): |   sim time change(s) |   wall time change(s) |
